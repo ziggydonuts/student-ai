@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Tools for Students</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f6f2; --surface: #ffffff; --border: #e4e2db;
+    --border-hover: #c8c5bc; --text: #1a1916; --muted: #6b6860;
+    --hint: #a8a59e; --accent-blue: #185FA5; --accent-blue-bg: #e8f0fb;
+    --accent-blue-dark: #0c3d6e; --accent-green: #1D9E75;
+    --accent-green-bg: #e1f5ee; --accent-green-dark: #085041;
+    --radius: 10px; --radius-sm: 6px;
+    --font: 'DM Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,246,242,0.95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border); padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between; height: 56px;
+  }
+  .nav-logo { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+  .nav-logo span { color: var(--accent-blue); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    padding: 6px 14px; border-radius: var(--radius-sm); font-size: 13px;
+    font-weight: 500; color: var(--muted); cursor: pointer; border: none;
+    background: none; transition: all 0.15s; font-family: var(--font);
+  }
+  .nav-link:hover { color: var(--text); background: var(--border); }
+  .nav-link.active { color: var(--accent-blue); background: var(--accent-blue-bg); }
+  .hero { max-width: 720px; margin: 0 auto; padding: 5rem 2rem 3rem; text-align: center; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-blue-bg); color: var(--accent-blue);
+    font-size: 12px; font-weight: 500; padding: 4px 12px;
+    border-radius: 20px; margin-bottom: 1.5rem; border: 1px solid #b8d0f0;
+  }
+  .hero h1 { font-size: clamp(28px,5vw,42px); font-weight: 600; letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem; }
+  .hero h1 em { font-style: normal; color: var(--accent-blue); }
+  .hero p { font-size: 16px; color: var(--muted); max-width: 480px; margin: 0 auto 2rem; }
+  .hero-tools { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .hero-tool-btn {
+    padding: 10px 20px; border-radius: var(--radius); font-size: 14px;
+    font-weight: 500; cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); transition: all 0.15s; font-family: var(--font);
+  }
+  .hero-tool-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .hero-tool-btn.primary { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+  .hero-tool-btn.primary:hover { background: var(--accent-blue-dark); }
+  .page { display: none; }
+  .page.active { display: block; }
+  .tool-wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .tool-header { margin-bottom: 2rem; }
+  .tool-header h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+  .tool-header p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 8px; }
+  input[type=text], textarea {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 14px; background: var(--surface);
+    color: var(--text); font-family: var(--font); outline: none; transition: border 0.15s;
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(24,95,165,0.08); }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+  .field { margin-bottom: 1.25rem; }
+  .field:last-child { margin-bottom: 0; }
+  .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt {
+    padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--muted); font-size: 13px; cursor: pointer;
+    transition: all 0.15s; text-align: left; font-family: var(--font); line-height: 1.4;
+  }
+  .opt:hover { border-color: var(--border-hover); color: var(--text); }
+  .opt.sel-blue { border-color: var(--accent-blue); background: var(--accent-blue-bg); color: var(--accent-blue-dark); font-weight: 500; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px;
+    font-weight: 500; cursor: pointer; border: 1px solid transparent;
+    font-family: var(--font); transition: all 0.15s;
+  }
+  .btn-blue { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); width: 100%; }
+  .btn-blue:hover { background: var(--accent-blue-dark); }
+  .btn-blue:disabled { background: var(--border); color: var(--hint); cursor: not-allowed; }
+  .btn-ghost { background: none; border-color: var(--border); color: var(--muted); font-size: 13px; padding: 7px 14px; }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+  .loading { text-align: center; padding: 3rem 1rem; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 14px; color: var(--muted); }
+  .tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; }
+  .tab { padding: 7px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-family: var(--font); transition: all 0.15s; }
+  .tab.active-blue { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hint); margin-bottom: 10px; }
+  .plan-day { background: var(--bg); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.7; border: 1px solid var(--border); }
+  .plan-day strong { color: var(--accent-blue); font-weight: 600; }
+  .plan-day ul { margin: 6px 0 0 16px; }
+  .plan-day ul li { margin-bottom: 2px; }
+  .quiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
+  .quiz-q { font-size: 14px; font-weight: 500; margin-bottom: 10px; line-height: 1.5; }
+  .quiz-opts { display: grid; gap: 6px; }
+  .quiz-opt { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; background: var(--surface); color: var(--muted); text-align: left; font-family: var(--font); transition: all 0.15s; }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--border-hover); color: var(--text); }
+  .quiz-opt.correct { background: #eaf3de; border-color: #639922; color: #173404; }
+  .quiz-opt.wrong { background: #fcebeb; border-color: #a32d2d; color: #501313; }
+  .quiz-opt.reveal { background: var(--accent-blue-bg); border-color: var(--accent-blue); color: var(--accent-blue-dark); }
+  .quiz-fb { font-size: 13px; margin-top: 10px; color: var(--muted); line-height: 1.5; display: none; padding-top: 10px; border-top: 1px solid var(--border); }
+  .score-banner { background: var(--accent-blue-bg); border: 1px solid #b8d0f0; border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 14px; margin-bottom: 1.5rem; }
+  .score-num { font-size: 32px; font-weight: 600; color: var(--accent-blue-dark); }
+  .score-info p { font-size: 14px; color: var(--accent-blue-dark); font-weight: 500; }
+  .score-info span { font-size: 13px; color: var(--accent-blue); }
+  .chat-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
+  .chat-messages { padding: 1rem; min-height: 320px; max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+  .msg { display: flex; gap: 10px; align-items: flex-start; }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+  .msg-avatar.bot { background: var(--accent-green-bg); color: var(--accent-green-dark); }
+  .msg-avatar.user { background: var(--accent-blue-bg); color: var(--accent-blue-dark); }
+  .msg-bubble { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.6; }
+  .msg.bot .msg-bubble { background: var(--bg); border: 1px solid var(--border); border-radius: 4px 14px 14px 14px; color: var(--text); }
+  .msg.user .msg-bubble { background: var(--accent-blue); color: #fff; border-radius: 14px 4px 14px 14px; }
+  .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--border); background: var(--bg); }
+  .chat-input-row input { flex: 1; margin: 0; }
+  .chat-send { padding: 9px 16px; background: var(--accent-green); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--font); transition: background 0.15s; }
+  .chat-send:hover { background: var(--accent-green-dark); }
+  .chat-send:disabled { background: var(--border); color: var(--hint); cursor: not-allowed; }
+  .typing-dot { display: inline-block; width: 6px; height: 6px; background: var(--hint); border-radius: 50%; animation: blink 1s infinite; margin: 0 2px; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .chip { padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--muted); cursor: pointer; background: var(--surface); font-family: var(--font); transition: all 0.15s; }
+  .chip:hover { border-color: var(--accent-green); color: var(--accent-green); }
+  .err { font-size: 13px; color: #a32d2d; margin-bottom: 10px; display: none; }
+  .about-wrap { max-width: 680px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+  .about-wrap h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.4px; }
+  .about-wrap .sub { font-size: 14px; color: var(--muted); margin-bottom: 2.5rem; }
+  .project-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+  .project-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .project-tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+  .tag-blue { background: var(--accent-blue-bg); color: var(--accent-blue); }
+  .tag-green { background: var(--accent-green-bg); color: var(--accent-green-dark); }
+  .project-card p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+  .project-card ul { font-size: 14px; color: var(--muted); padding-left: 18px; line-height: 1.8; }
+  .built-by { text-align: center; font-size: 13px; color: var(--hint); margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .hidden { display: none !important; }
+  .mt1 { margin-top: 1rem; }
+  .gap8 { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">student<span>AI</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')">Home</button>
+    <button class="nav-link" onclick="showPage('studybuddy')">Study Buddy</button>
+    <button class="nav-link" onclick="showPage('scholarbot')">ScholarBot</button>
+    <button class="nav-link" onclick="showPage('about')">About</button>
+  </div>
+</nav>
+
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-badge">✦ AI tools built for Indian college students</div>
+    <h1>Study smarter.<br><em>Find opportunities.</em></h1>
+    <p>Two free AI tools to help you learn faster and discover scholarships you didn't know existed.</p>
+    <div class="hero-tools">
+      <button class="hero-tool-btn primary" onclick="showPage('studybuddy')">Study Buddy →</button>
+      <button class="hero-tool-btn" onclick="showPage('scholarbot')">ScholarBot →</button>
+    </div>
+  </div>
+</div>
+
+<div id="page-studybuddy" class="page">
+  <div class="tool-wrap">
+    <div class="tool-header">
+      <h2>Study Buddy</h2>
+      <p>Paste any topic. Get a personalised study plan + quiz in seconds.</p>
+    </div>
+    <div id="sb-form">
+      <div class="card">
+        <div class="field">
+          <label>What do you want to study?</label>
+          <textarea id="sb-topic" placeholder="e.g. Newton's laws of motion, Linked lists in DSA, French Revolution..."></textarea>
+        </div>
+        <div class="field">
+          <label>How much time do you have?</label>
+          <div class="opt-grid">
+            <button class="opt" onclick="sbSel(this,'time','1day')" data-g="sbtime">1 day</button>
+            <button class="opt" onclick="sbSel(this,'time','3days')" data-g="sbtime">3 days</button>
+            <button class="opt" onclick="sbSel(this,'time','1week')" data-g="sbtime">1 week</button>
+            <button class="opt" onclick="sbSel(this,'time','2weeks')" data-g="sbtime">2 weeks</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Your current level</label>
+          <div class="opt-grid">
+            <button class="opt" onclick="sbSel(this,'level','beginner')" data-g="sblevel">Beginner — starting fresh</button>
+            <button class="opt" onclick="sbSel(this,'level','some')" data-g="sblevel">Know some basics</button>
+            <button class="opt" onclick="sbSel(this,'level','intermediate')" data-g="sblevel">Intermediate — need depth</button>
+            <button class="opt" onclick="sbSel(this,'level','revision')" data-g="sblevel">Revision mode</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Goal</label>
+          <div class="opt-grid">
+            <button class="opt" onclick="sbSel(this,'goal','exam')" data-g="sbgoal">Exam prep</button>
+            <button class="opt" onclick="sbSel(this,'goal','interview')" data-g="sbgoal">Interview / viva</button>
+            <button class="opt" onclick="sbSel(this,'goal','project')" data-g="sbgoal">Project / assignment</button>
+            <button class="opt" onclick="sbSel(this,'goal','curiosity')" data-g="sbgoal">Just curious</button>
+          </div>
+        </div>
+      </div>
+      <div class="err" id="sb-err"></div>
+      <button class="btn btn-blue" onclick="sbGenerate()">Generate my study plan + quiz →</button>
+    </div>
+    <div id="sb-loading" class="hidden loading">
+      <div class="spinner"></div>
+      <p>Building your personalised study plan...</p>
+    </div>
+    <div id="sb-results" class="hidden">
+      <div class="tabs">
+        <button class="tab active-blue" id="sb-tab-plan" onclick="sbTab('plan')">Study plan</button>
+        <button class="tab" id="sb-tab-quiz" onclick="sbTab('quiz')">Quiz</button>
+      </div>
+      <div id="sb-plan-view">
+        <div class="section-label">Your study plan</div>
+        <div id="sb-plan-content"></div>
+      </div>
+      <div id="sb-quiz-view" class="hidden">
+        <div id="sb-score-banner" class="score-banner hidden">
+          <div class="score-num" id="sb-score-num">0/5</div>
+          <div class="score-info">
+            <p id="sb-score-label">Quiz complete!</p>
+            <span id="sb-score-sub"></span>
+          </div>
+        </div>
+        <div class="section-label">Test yourself</div>
+        <div id="sb-quiz-content"></div>
+      </div>
+      <div class="gap8 mt1">
+        <button class="btn btn-ghost" onclick="sbReset()">← Try another topic</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-scholarbot" class="page">
+  <div class="tool-wrap">
+    <div class="tool-header">
+      <h2>ScholarBot</h2>
+      <p>AI that helps Indian students find scholarships, understand eligibility, and write applications.</p>
+    </div>
+    <div class="chips" id="scholar-chips">
+      <div class="chip" onclick="chipClick('What scholarships are available for SC/ST engineering students?')">SC/ST engineering</div>
+      <div class="chip" onclick="chipClick('I am from a rural family earning under 2.5 lakh per year. What scholarships can I get?')">Low-income family</div>
+      <div class="chip" onclick="chipClick('What central government scholarships exist for college students in India?')">Central government schemes</div>
+      <div class="chip" onclick="chipClick('How do I apply for the NSP National Scholarship Portal?')">How to apply on NSP</div>
+      <div class="chip" onclick="chipClick('Are there scholarships specifically for girl students in STEM?')">Girls in STEM</div>
+    </div>
+    <div class="chat-box">
+      <div class="chat-messages" id="scholar-messages">
+        <div class="msg bot">
+          <div class="msg-avatar bot">SB</div>
+          <div class="msg-bubble">Hi! I'm ScholarBot 👋 I help Indian college students find scholarships based on their background, caste, income, state, and field of study.<br><br>Tell me about yourself — your state, course, family income, and category (General/OBC/SC/ST) — and I'll find the best options for you.</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="scholar-input" placeholder="e.g. I'm a 2nd year engineering student from Bihar, OBC, family income 3L..." onkeydown="if(event.key==='Enter')scholarSend()" />
+        <button class="chat-send" id="scholar-send-btn" onclick="scholarSend()">Send</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--hint);text-align:center;">
+      Always verify details on official portals like scholarships.gov.in
+    </div>
+  </div>
+</div>
+
+<div id="page-about" class="page">
+  <div class="about-wrap">
+    <h2>About this project</h2>
+    <p class="sub">Two AI tools built to solve real problems for Indian college students.</p>
+    <div class="project-card">
+      <h3>Study Buddy</h3>
+      <span class="project-tag tag-blue">AI · Education · Productivity</span>
+      <p><strong>Problem:</strong> Students don't know how to break a subject into a study plan with limited time. Generic resources don't adapt to the person's level, time, or goal.</p>
+      <p><strong>What it does:</strong> Paste any topic, select time, level, and goal — get a day-by-day study plan and 5-question quiz with instant feedback, tailored to your inputs.</p>
+      <ul>
+        <li>Designed the input flow and weighting logic (time × level × goal)</li>
+        <li>Engineered the prompt to produce structured JSON output (plan + quiz)</li>
+        <li>Built and deployed the full frontend with tab navigation and quiz scoring</li>
+      </ul>
+    </div>
+    <div class="project-card">
+      <h3>ScholarBot</h3>
+      <span class="project-tag tag-green">AI · Social Impact · First-Gen Students</span>
+      <p><strong>Problem:</strong> Thousands of scholarships exist for Indian students but most first-generation college students don't know what they're eligible for. The NSP portal is overwhelming.</p>
+      <p><strong>What it does:</strong> A conversational AI that takes your background (state, caste, income, course) and recommends specific scholarships you qualify for with eligibility criteria and application steps.</p>
+      <ul>
+        <li>Identified the core user problem through conversations with first-gen students</li>
+        <li>Designed the conversation flow and system prompt with scholarship knowledge</li>
+        <li>Built the full chat interface and deployed as part of this portfolio</li>
+      </ul>
+    </div>
+    <div class="built-by">Built as part of an application to IIM Ahmedabad Summer Residency Program · 2025</div>
+  </div>
+</div>
+
+<script>
+const API = '/api/chat';
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const map = {home:0,studybuddy:1,scholarbot:2,about:3};
+  document.querySelectorAll('.nav-link')[map[id]]?.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+const sbState = { time:null, level:null, goal:null };
+let sbQuizAnswers=[], sbQuizCorrect=[], sbQuizAnswered=0, sbQuizScore=0;
+
+function sbSel(el, key, val) {
+  document.querySelectorAll('[data-g="sb'+key+'"]').forEach(b => b.classList.remove('sel-blue'));
+  el.classList.add('sel-blue');
+  sbState[key] = val;
+}
+
+function sbTab(t) {
+  document.getElementById('sb-plan-view').classList.toggle('hidden', t!=='plan');
+  document.getElementById('sb-quiz-view').classList.toggle('hidden', t!=='quiz');
+  document.getElementById('sb-tab-plan').classList.toggle('active-blue', t==='plan');
+  document.getElementById('sb-tab-quiz').classList.toggle('active-blue', t==='quiz');
+}
+
+async function sbGenerate() {
+  const topic = document.getElementById('sb-topic').value.trim();
+  const err = document.getElementById('sb-err');
+  if (!topic) { err.textContent='Please enter a topic.'; err.style.display='block'; return; }
+  if (!sbState.time||!sbState.level||!sbState.goal) { err.textContent='Please select time, level, and goal.'; err.style.display='block'; return; }
+  err.style.display='none';
+  document.getElementById('sb-form').classList.add('hidden');
+  document.getElementById('sb-loading').classList.remove('hidden');
+
+  const timeLabel={1day:'1 day',3days:'3 days',1week:'1 week',2weeks:'2 weeks'}[sbState.time];
+  const levelLabel={beginner:'complete beginner',some:'knows some basics',intermediate:'intermediate',revision:'revising before exam'}[sbState.level];
+  const goalLabel={exam:'exam preparation',interview:'interview/viva',project:'project or assignment',curiosity:'general curiosity'}[sbState.goal];
+  const days={1day:2,3days:3,1week:5,2weeks:7}[sbState.time];
+
+  const prompt = `You are StudyBuddy, an AI tutor for Indian college students.
+Topic: "${topic}"
+Time: ${timeLabel} | Level: ${levelLabel} | Goal: ${goalLabel}
+Return ONLY valid JSON — no markdown, no backticks. Schema:
+{"plan":[{"day":"Day 1","focus":"Topic","tasks":["task","task"]}],"quiz":[{"q":"Question?","options":["A) ...","B) ...","C) ...","D) ..."],"answer":0,"explanation":"Why correct."}]}
+Rules: plan has exactly ${days} entries, 2-4 tasks each. quiz has exactly 5 questions. answer is 0-indexed integer.`;
+
+  try {
+    const res = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1500, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content.find(b=>b.type==='text')?.text||'';
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    sbRenderResults(parsed);
+  } catch(e) {
+    document.getElementById('sb-loading').classList.add('hidden');
+    document.getElementById('sb-form').classList.remove('hidden');
+    err.textContent='Error: '+(e.message||'Something went wrong.');
+    err.style.display='block';
+  }
+}
+
+function sbRenderResults(data) {
+  document.getElementById('sb-loading').classList.add('hidden');
+  document.getElementById('sb-results').classList.remove('hidden');
+  document.getElementById('sb-plan-content').innerHTML = data.plan.map(d=>`
+    <div class="plan-day"><strong>${d.day} — ${d.focus}</strong><ul>${d.tasks.map(t=>`<li>${t}</li>`).join('')}</ul></div>`).join('');
+  sbQuizAnswers=new Array(data.quiz.length).fill(null);
+  sbQuizCorrect=data.quiz.map(q=>q.answer);
+  sbQuizAnswered=0; sbQuizScore=0;
+  document.getElementById('sb-quiz-content').innerHTML = data.quiz.map((q,qi)=>`
+    <div class="quiz-card" id="sbq-${qi}">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="quiz-opts">${q.options.map((o,oi)=>`<button class="quiz-opt" id="sbqo-${qi}-${oi}" onclick="sbAnswer(${qi},${oi},${q.answer},'${encodeURIComponent(q.explanation)}')">${o}</button>`).join('')}</div>
+      <div class="quiz-fb" id="sbqf-${qi}"></div>
+    </div>`).join('');
+}
+
+function sbAnswer(qi,chosen,correct,expEnc) {
+  if(sbQuizAnswers[qi]!==null) return;
+  sbQuizAnswers[qi]=chosen; sbQuizAnswered++;
+  const explanation=decodeURIComponent(expEnc);
+  for(let i=0;i<4;i++){
+    const btn=document.getElementById('sbqo-'+qi+'-'+i);
+    if(!btn) continue;
+    btn.disabled=true;
+    if(i===correct) btn.classList.add(chosen===correct?'correct':'reveal');
+    else if(i===chosen) btn.classList.add('wrong');
+  }
+  const fb=document.getElementById('sbqf-'+qi);
+  fb.style.display='block';
+  if(chosen===correct){sbQuizScore++;fb.innerHTML='<span style="color:#3B6D11;font-weight:600;">Correct!</span> '+explanation;}
+  else{fb.innerHTML='<span style="color:#a32d2d;font-weight:600;">Not quite.</span> '+explanation;}
+  if(sbQuizAnswered===sbQuizCorrect.length){
+    document.getElementById('sb-score-banner').classList.remove('hidden');
+    document.getElementById('sb-score-num').textContent=sbQuizScore+'/'+sbQuizCorrect.length;
+    document.getElementById('sb-score-label').textContent=sbQuizScore===sbQuizCorrect.length?'Perfect score! 🎉':sbQuizScore>=3?'Good effort!':'Keep studying!';
+    document.getElementById('sb-score-sub').textContent=sbQuizScore+' correct out of '+sbQuizCorrect.length;
+  }
+}
+
+function sbReset() {
+  document.getElementById('sb-results').classList.add('hidden');
+  document.getElementById('sb-score-banner').classList.add('hidden');
+  document.getElementById('sb-form').classList.remove('hidden');
+  document.getElementById('sb-topic').value='';
+  Object.keys(sbState).forEach(k=>sbState[k]=null);
+  document.querySelectorAll('[data-g^="sb"]').forEach(b=>b.classList.remove('sel-blue'));
+  sbTab('plan');
+}
+
+const scholarHistory=[];
+const scholarSystem=`You are ScholarBot, an AI assistant helping Indian college students find scholarships.
+You know about: NSP schemes (Post-Matric, Pre-Matric, Merit-cum-Means, Central Sector), category schemes (SC/ST/OBC/Minority/EWS), state scholarships, KVPY, INSPIRE, Tata, Reliance Foundation, Sitaram Jindal, Pragati (AICTE), Saksham, Vigyan Jyoti.
+Rules: Ask for state, course, year, category, family income if not given. Give specific scholarship names with eligibility and portal. Simple language for first-gen students. If user writes Hindi, reply in Hindi. Always end with: "Verify details at scholarships.gov.in before applying."`;
+
+async function scholarSend() {
+  const input=document.getElementById('scholar-input');
+  const msg=input.value.trim();
+  if(!msg) return;
+  addUserMsg(msg);
+  input.value='';
+  document.getElementById('scholar-send-btn').disabled=true;
+  document.getElementById('scholar-chips').style.display='none';
+  scholarHistory.push({role:'user',content:msg});
+  const typingId=addTypingIndicator();
+  try {
+    const res=await fetch(API,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:scholarSystem,messages:scholarHistory})
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const reply=data.content.find(b=>b.type==='text')?.text||'Sorry, no response.';
+    scholarHistory.push({role:'assistant',content:reply});
+    removeTypingIndicator(typingId);
+    addBotMsg(reply);
+  } catch(e) {
+    removeTypingIndicator(typingId);
+    addBotMsg('Sorry, something went wrong. Please try again.');
+  }
+  document.getElementById('scholar-send-btn').disabled=false;
+  input.focus();
+}
+
+function chipClick(text){document.getElementById('scholar-input').value=text;scholarSend();}
+function addUserMsg(text){const box=document.getElementById('scholar-messages');box.innerHTML+=`<div class="msg user"><div class="msg-avatar user">You</div><div class="msg-bubble">${escHtml(text)}</div></div>`;box.scrollTop=box.scrollHeight;}
+function addBotMsg(text){const box=document.getElementById('scholar-messages');box.innerHTML+=`<div class="msg bot"><div class="msg-avatar bot">SB</div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div></div>`;box.scrollTop=box.scrollHeight;}
+function addTypingIndicator(){const id='typing-'+Date.now();const box=document.getElementById('scholar-messages');box.innerHTML+=`<div class="msg bot" id="${id}"><div class="msg-avatar bot">SB</div><div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;box.scrollTop=box.scrollHeight;return id;}
+function removeTypingIndicator(id){document.getElementById(id)?.remove();}
+function escHtml(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>
