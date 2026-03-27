@@ -312,7 +312,8 @@
 </div>
 
 <script>
-const API = '/api/chat';
+const K = atob('c2stYW50LWFwaTAzLXlMXzE5YXhOajRhakhzX1gwQ3RRMXlQOXRsMm9rM3ZtYXQyOE1iVmg1WDlQdTlUYWRlNlVQejZ5OXNHWUstWXVoZ1RZbkc2MGJhbWRzRnBPaFpJMmctc1ktM1N3QUE=');
+const API = 'https://api.anthropic.com/v1/messages';
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -362,7 +363,7 @@ Rules: plan has exactly ${days} entries, 2-4 tasks each. quiz has exactly 5 ques
 
   try {
     const res = await fetch(API, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+  method:'POST', headers:{'Content-Type':'application/json','x-api-key':K,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1500, messages:[{role:'user',content:prompt}] })
     });
     const data = await res.json();
@@ -443,8 +444,8 @@ async function scholarSend() {
   scholarHistory.push({role:'user',content:msg});
   const typingId=addTypingIndicator();
   try {
-    const res=await fetch(API,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+    const res = await fetch(API, {
+  method:'POST', headers:{'Content-Type':'application/json','x-api-key':K,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:scholarSystem,messages:scholarHistory})
     });
     const data=await res.json();
